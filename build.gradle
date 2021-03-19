@@ -1,0 +1,24 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.4.31'
+    id 'java-gradle-plugin'
+}
+
+group 'io.github.chao2zhang.logginglivedata'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+gradlePlugin {
+    plugins {
+        loggingLiveDataPlugin {
+            id = 'io.github.chao2zhang.logginglivedata'
+            implementationClass = "io.github.chao2zhang.LoggingLiveDataPlugin"
+        }
+    }
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+}
