@@ -1,13 +1,14 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.4.31'
+    id 'org.jetbrains.dokka' version '1.4.30'
     id 'java-gradle-plugin'
+    id 'com.vanniktech.maven.publish' version '0.13.0'
 }
-
-group 'io.github.chao2zhang.logginglivedata'
-version '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
+    google()
+    jcenter()
 }
 
 gradlePlugin {
@@ -19,6 +20,13 @@ gradlePlugin {
     }
 }
 
+compileJava {
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+}
+
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7"
+    implementation 'com.android.tools.build:gradle-api:4.1.3'
+    compileOnly 'com.android.tools.build:gradle:4.1.3'
 }
