@@ -9,9 +9,14 @@ import com.android.build.api.transform.TransformInput
 import com.android.build.api.transform.TransformInvocation
 import com.android.build.api.variant.VariantInfo
 import org.gradle.api.logging.Logger
+import org.objectweb.asm.ClassReader
+import org.objectweb.asm.ClassWriter
+import org.objectweb.asm.util.TraceClassVisitor
 import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileOutputStream
+import java.io.PrintWriter
+import java.io.StringWriter
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import java.util.zip.ZipOutputStream
@@ -47,7 +52,6 @@ class LoggingLiveDataTransform(private val logger: Logger) : Transform() {
                 jarInput.scopes,
                 Format.JAR
             )
-            logger.lifecycle("Transforming ${jarInput.file}")
             if (transformInvocation.isIncremental) {
                 when (jarInput.status) {
                     Status.ADDED, Status.CHANGED -> transformJarInput(jarInput, inputJar, outputJar)
@@ -74,10 +78,22 @@ class LoggingLiveDataTransform(private val logger: Logger) : Transform() {
         val inputEntries = inputZip.entries()
         while (inputEntries.hasMoreElements()) {
             val inputEntry = inputEntries.nextElement()
+            val inputBytes = inputZip.getInputStream(inputEntry).readAllBytes()
+            var outputBytes = inputBytes
+            if (inputEntry.isLiveDataClass()) {
+                logger.lifecycle("Transforming $inputEntry to add logging statements in LiveData")
+                val stringWriter = StringWriter()
+                val classReader = ClassReader(inputBytes)
+                val classWriter = ClassWriter(classReader, 0)
+                val tracingClassVisitor = TraceClassVisitor(classWriter, PrintWriter(stringWriter))
+                val classVisitor = LoggingLiveDataClassVisitor(tracingClassVisitor)
+                classReader.accept(classVisitor, 0)
+                outputBytes = classWriter.toByteArray()
+            }
             val outputEntry = ZipEntry(inputEntry.name)
             with(outputZip) {
                 putNextEntry(outputEntry)
-                write(inputZip.getInputStream(inputEntry).readAllBytes())
+                write(outputBytes)
                 closeEntry()
             }
         }
@@ -86,5 +102,8 @@ class LoggingLiveDataTransform(private val logger: Logger) : Transform() {
     }
 
     private fun JarInput.isLiveDataJarInput(): Boolean =
-        name.startsWith("androidx.lifecycle:lifecycle-livedata:")
+        name.startsWith("androidx.lifecycle:lifecycle-livedata-core:")
+
+    private fun ZipEntry.isLiveDataClass(): Boolean =
+        name == "androidx/lifecycle/LiveData.class"
 }
