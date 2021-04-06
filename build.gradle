@@ -15,6 +15,9 @@ repositories {
     }
 }
 
+
+group="io.github.chao2zhang.logginglivedata"
+
 gradlePlugin {
     plugins {
         loggingLiveDataPlugin {
