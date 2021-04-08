@@ -82,11 +82,9 @@ class LoggingLiveDataTransform(private val logger: Logger) : Transform() {
             var outputBytes = inputBytes
             if (inputEntry.isLiveDataClass()) {
                 logger.lifecycle("Transforming $inputEntry to add logging statements in LiveData")
-                val stringWriter = StringWriter()
                 val classReader = ClassReader(inputBytes)
                 val classWriter = ClassWriter(classReader, 0)
-                val tracingClassVisitor = TraceClassVisitor(classWriter, PrintWriter(stringWriter))
-                val classVisitor = LoggingLiveDataClassVisitor(tracingClassVisitor)
+                val classVisitor = LoggingLiveDataClassVisitor(classWriter)
                 classReader.accept(classVisitor, 0)
                 outputBytes = classWriter.toByteArray()
             }
