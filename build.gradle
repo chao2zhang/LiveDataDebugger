@@ -2,7 +2,7 @@ plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.4.31'
     id 'org.jetbrains.dokka' version '1.4.30'
     id 'java-gradle-plugin'
-    id 'com.vanniktech.maven.publish' version '0.13.0'
+    id 'com.vanniktech.maven.publish' version '0.14.2'
 }
 
 repositories {
@@ -17,13 +17,14 @@ repositories {
 }
 
 
-group="io.github.chao2zhang.logginglivedata"
+group="io.github.chao2zhang.livedatadebugger"
 
 gradlePlugin {
     plugins {
-        loggingLiveDataPlugin {
-            id = 'io.github.chao2zhang.logginglivedata'
-            implementationClass = "io.github.chao2zhang.LoggingLiveDataPlugin"
+        liveDataDebuggerPlugin {
+            id = 'io.github.chao2zhang.livedatadebugger'
+            implementationClass = "io.github.chao2zhang.LiveDataDebuggerPlugin"
+            description = "The gradle plugin to make LiveData universally debuggable"
         }
     }
 }

@@ -11,18 +11,15 @@ import com.android.build.api.variant.VariantInfo
 import org.gradle.api.logging.Logger
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
-import org.objectweb.asm.util.TraceClassVisitor
 import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileOutputStream
-import java.io.PrintWriter
-import java.io.StringWriter
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import java.util.zip.ZipOutputStream
 
 @Suppress("UnstableApiUsage")
-class LoggingLiveDataTransform(private val logger: Logger) : Transform() {
+class LiveDataTransform(private val logger: Logger) : Transform() {
 
     override fun getName(): String = javaClass.simpleName
 
@@ -84,7 +81,7 @@ class LoggingLiveDataTransform(private val logger: Logger) : Transform() {
                 logger.lifecycle("Transforming $inputEntry to add logging statements in LiveData")
                 val classReader = ClassReader(inputBytes)
                 val classWriter = ClassWriter(classReader, 0)
-                val classVisitor = LoggingLiveDataClassVisitor(classWriter)
+                val classVisitor = LiveDataClassVisitor(classWriter)
                 classReader.accept(classVisitor, 0)
                 outputBytes = classWriter.toByteArray()
             }
